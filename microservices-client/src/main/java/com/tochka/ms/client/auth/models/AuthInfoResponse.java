@@ -17,9 +17,4 @@ public class AuthInfoResponse {
 
     private String userName;
 
-    private String userAccount;
-
-    private String userRoleId;
-
-    private Map<String, Map<String, Boolean>> userRights;
 }

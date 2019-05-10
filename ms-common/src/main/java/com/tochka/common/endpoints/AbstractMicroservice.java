@@ -138,9 +138,6 @@ public abstract class AbstractMicroservice {
                     .map(response -> UserInfo.builder()
                             .userId(response.getUserId())
                             .userName(response.getUserName())
-                            .userAccount(response.getUserAccount())
-                            .userRoleId(response.getUserRoleId())
-                            .userRights(response.getUserRights())
                             .build());
 
             //если нашли - устанавливаем в параметры запроса
