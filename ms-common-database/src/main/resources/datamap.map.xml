@@ -3,7 +3,7 @@
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	 xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap https://cayenne.apache.org/schema/9/modelMap.xsd"
 	 project-version="9">
-	<property name="defaultPackage" value="ru.ecom.np.database.entity"/>
+	<property name="defaultPackage" value="com.tochka.database.entity"/>
 	<property name="quoteSqlIdentifiers" value="true"/>
 	<db-entity name="tch_user" schema="public">
 		<db-attribute name="account_id" type="OTHER" length="2147483647"/>
@@ -22,7 +22,7 @@
 		<db-attribute name="modified_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="user_id" type="OTHER" isMandatory="true" length="2147483647"/>
 	</db-entity>
-	<obj-entity name="TchUser" className="ru.ecom.np.database.entity.TchUser" dbEntityName="tch_user">
+	<obj-entity name="TchUser" className="com.tochka.database.entity.TchUser" dbEntityName="tch_user">
 		<obj-attribute name="accountId" type="java.util.UUID" db-attribute-path="account_id"/>
 		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
 		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
@@ -31,7 +31,7 @@
 		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
 		<obj-attribute name="password" type="java.lang.String" db-attribute-path="password"/>
 	</obj-entity>
-	<obj-entity name="TchUserSession" className="ru.ecom.np.database.entity.TchUserSession" dbEntityName="tch_user_session">
+	<obj-entity name="TchUserSession" className="com.tochka.database.entity.TchUserSession" dbEntityName="tch_user_session">
 		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
 		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
 		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
