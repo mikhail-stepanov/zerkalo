@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <groupId>com.tochka</groupId>
+    <groupId>social.tochka</groupId>
     <artifactId>tochka-back</artifactId>
     <version>1.0.0</version>
     <name>tochka</name>
