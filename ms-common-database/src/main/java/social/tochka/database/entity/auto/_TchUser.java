@@ -2,7 +2,6 @@ package social.tochka.database.entity.auto;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.exp.Property;
@@ -21,21 +20,14 @@ public abstract class _TchUser extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "id";
 
-    public static final Property<UUID> ACCOUNT_ID = Property.create("accountId", UUID.class);
     public static final Property<LocalDateTime> CREATED_DATE = Property.create("createdDate", LocalDateTime.class);
     public static final Property<LocalDateTime> DELETED_DATE = Property.create("deletedDate", LocalDateTime.class);
     public static final Property<String> EMAIL = Property.create("email", String.class);
     public static final Property<String> LOGIN = Property.create("login", String.class);
     public static final Property<LocalDateTime> MODIFIED_DATE = Property.create("modifiedDate", LocalDateTime.class);
     public static final Property<String> PASSWORD = Property.create("password", String.class);
-    public static final Property<List<TchUserSession>> TCH_USER_SESSIONS = Property.create("tchUserSessions", List.class);
-
-    public void setAccountId(UUID accountId) {
-        writeProperty("accountId", accountId);
-    }
-    public UUID getAccountId() {
-        return (UUID)readProperty("accountId");
-    }
+    public static final Property<String> USER_NAME = Property.create("userName", String.class);
+    public static final Property<List<TchUserSession>> TCH_USER_SESSION = Property.create("tchUserSession", List.class);
 
     public void setCreatedDate(LocalDateTime createdDate) {
         writeProperty("createdDate", createdDate);
@@ -79,15 +71,22 @@ public abstract class _TchUser extends CayenneDataObject {
         return (String)readProperty("password");
     }
 
-    public void addToTchUserSessions(TchUserSession obj) {
-        addToManyTarget("tchUserSessions", obj, true);
+    public void setUserName(String userName) {
+        writeProperty("userName", userName);
     }
-    public void removeFromTchUserSessions(TchUserSession obj) {
-        removeToManyTarget("tchUserSessions", obj, true);
+    public String getUserName() {
+        return (String)readProperty("userName");
+    }
+
+    public void addToTchUserSession(TchUserSession obj) {
+        addToManyTarget("tchUserSession", obj, true);
+    }
+    public void removeFromTchUserSession(TchUserSession obj) {
+        removeToManyTarget("tchUserSession", obj, true);
     }
     @SuppressWarnings("unchecked")
-    public List<TchUserSession> getTchUserSessions() {
-        return (List<TchUserSession>)readProperty("tchUserSessions");
+    public List<TchUserSession> getTchUserSession() {
+        return (List<TchUserSession>)readProperty("tchUserSession");
     }
 
 

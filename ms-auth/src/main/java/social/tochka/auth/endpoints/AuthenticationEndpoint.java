@@ -7,10 +7,7 @@ import social.tochka.database.DatabaseService;
 import social.tochka.database.entity.TchUser;
 import social.tochka.database.entity.TchUserSession;
 import social.tochka.ms.client.auth.interfaces.IAuthenticationService;
-import social.tochka.ms.client.auth.models.AuthInfoRequest;
-import social.tochka.ms.client.auth.models.AuthInfoResponse;
-import social.tochka.ms.client.auth.models.AuthLoginRequest;
-import social.tochka.ms.client.auth.models.AuthLoginResponse;
+import social.tochka.ms.client.auth.models.*;
 import social.tochka.ms.client.exceptions.MicroServiceException;
 import social.tochka.ms.client.exceptions.MsNotAuthorizedException;
 import org.apache.cayenne.ObjectContext;
@@ -27,14 +24,10 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @Primary
 @RestController
 public class AuthenticationEndpoint extends AbstractMicroservice implements IAuthenticationService {
-
-    private final ExecutorService executorService = Executors.newCachedThreadPool();
 
     @Autowired
     private DatabaseService databaseService;
@@ -59,10 +52,10 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
 
         UUID sessionId = UUID.fromString(request.getToken());
 
-        TchUserSession session = SelectById.query(TchUserSession.class, sessionId).selectFirst(context);
+        TchUserSession session = SelectById.query(TchUserSession.class, sessionId).selectOne(context);
 
         return AuthInfoResponse.builder()
-                .userId(session.getUser().getAccountId().toString())
+                .userId(session.getUser().getObjectId().getIdSnapshot().get("id").toString())
                 .userName(session.getUser().getLogin())
                 .build();
     }
@@ -91,13 +84,34 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
 
         return AuthLoginResponse.builder()
                 .token(session.getObjectId().getIdSnapshot().get("id").toString())
-                .userId(session.getUser().getAccountId().toString())
+                .userId(session.getUser().getObjectId().getIdSnapshot().get("id").toString())
                 .userName(user.getLogin())
                 .build();
     }
 
+    @Override
+    public AuthLogoutResponse logout(AuthLogoutRequest request) throws MicroServiceException {
+        return null;
+    }
+
+    @Override
+    public AuthLoginResponse signUp(AuthSignUpRequest request) throws MicroServiceException {
+
+        ObjectContext context = databaseService.getContext();
+
+        TchUser user = context.newObject(TchUser.class);
+
+        user.setLogin(request.getLogin());
+        user.setPassword(password(request.getPassword()));
+
+        return login(AuthLoginRequest.builder()
+                .login(request.getLogin())
+                .password(request.getPassword())
+                .build());
+    }
+
     public String password(@Valid @RequestBody String request) throws MicroServiceException {
-        String password = "dp_" + request;
-        return DigestUtils.md5DigestAsHex(password.getBytes());
+//        String password = "tch_" + request;
+        return DigestUtils.md5DigestAsHex(request.getBytes());
     }
 }

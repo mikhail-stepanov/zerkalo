@@ -55,10 +55,11 @@
     </properties>
 
     <modules>
-        <module>microservices-client</module>
+        <module>ms-client</module>
         <module>ms-common</module>
         <module>ms-common-database</module>
         <module>ms-auth</module>
+        <module>ms-mobile</module>
     </modules>
 
     <dependencies>

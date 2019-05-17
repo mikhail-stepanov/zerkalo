@@ -12,7 +12,7 @@
 
     <dependencies>
         <dependency>
-            <artifactId>microservices-client</artifactId>
+            <artifactId>ms-client</artifactId>
             <groupId>social.tochka</groupId>
             <version>1.0.0</version>
             <scope>compile</scope>

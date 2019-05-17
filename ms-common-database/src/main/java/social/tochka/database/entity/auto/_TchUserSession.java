@@ -18,6 +18,7 @@ public abstract class _TchUserSession extends CayenneDataObject {
     private static final long serialVersionUID = 1L; 
 
     public static final String ID_PK_COLUMN = "id";
+    public static final String USER_ID_PK_COLUMN = "user_id";
 
     public static final Property<LocalDateTime> CREATED_DATE = Property.create("createdDate", LocalDateTime.class);
     public static final Property<LocalDateTime> DELETED_DATE = Property.create("deletedDate", LocalDateTime.class);
