@@ -7,13 +7,15 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthInfoRequest {
+public class AuthSignUpRequest {
 
     @NotNull
-    private String token;
+    private String login;
+
+    @NotNull
+    private String password;
 }
