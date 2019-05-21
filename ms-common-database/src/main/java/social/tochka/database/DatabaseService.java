@@ -10,7 +10,6 @@ public class DatabaseService {
 
     private ServerRuntime cayenneRuntime;
 
-
     @Autowired
     public DatabaseService(ServerRuntime serverRuntime){
         this.cayenneRuntime = serverRuntime;

@@ -26,11 +26,9 @@ public class BaseMicroservice {
     @Value("${ms.retry.time.sec:2}")
     private int sleepTime;
 
-    protected BaseMicroservice(String serviceName, RestTemplate restTemplate){
-        Map<String, String> getenv = System.getenv();
-        String userName = getenv.get("USERNAME");
+    protected BaseMicroservice(String serviceName, RestTemplate restTemplate) {
 
-        this.serviceName = serviceName + (userName == null ? "" : "-" + userName.replaceAll("\\.", "-"));
+        this.serviceName = serviceName;
         this.restTemplate = restTemplate;
 
         restTemplate.getInterceptors().add((request, body, execution) -> {

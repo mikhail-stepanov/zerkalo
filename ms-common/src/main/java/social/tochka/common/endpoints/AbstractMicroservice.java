@@ -88,7 +88,7 @@ public abstract class AbstractMicroservice {
     }
 
     private String getInternalSessionId() {
-        return header("x-ecom-sid")
+        return header("x-tochka-sid")
                 .orElse(UUID.randomUUID().toString());
     }
 
