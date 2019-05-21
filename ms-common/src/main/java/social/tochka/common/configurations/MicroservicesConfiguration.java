@@ -35,6 +35,7 @@ public class MicroservicesConfiguration {
         return new AuthenticationService(restTemplate());
     }
 
+
     @Bean
     public FilterRegistrationBean filterRegistrationService() {
         FilterRegistrationBean registration = new FilterRegistrationBean();
