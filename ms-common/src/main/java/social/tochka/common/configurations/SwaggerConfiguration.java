@@ -23,7 +23,7 @@ public class SwaggerConfiguration implements WebMvcConfigurer {
     public Docket api() {
         Docket docket = new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("ru.ecom.np"))
+                .apis(RequestHandlerSelectors.basePackage("social.tochka"))
                 .apis(RequestHandlerSelectors.withClassAnnotation(Api.class))
                 .paths(PathSelectors.any())
 
