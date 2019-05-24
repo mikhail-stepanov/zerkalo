@@ -69,18 +69,15 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
         TchUser user = ObjectSelect.query(TchUser.class)
                 .where(TchUser.LOGIN.eq(request.getLogin()))
                 .where(TchUser.PASSWORD.eq(password(request.getPassword())))
-                .selectOne(context);
+                .selectFirst(context);
 
         if (user == null) {
             throw new MsNotAuthorizedException();
         }
-        TchUserSession session = ObjectSelect.query(TchUserSession.class).where(TchUserSession.USER.eq(user)).selectFirst(context);
 
-        if (session == null) {
-            session = context.newObject(TchUserSession.class);
-            session.setUser(user);
-            context.commitChanges();
-        }
+        TchUserSession session = context.newObject(TchUserSession.class);
+        session.setUser(user);
+        context.commitChanges();
 
         return AuthLoginResponse.builder()
                 .token(session.getObjectId().getIdSnapshot().get("id").toString())
@@ -90,12 +87,14 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
     }
 
     @Override
-    public AuthLogoutResponse logout(AuthLogoutRequest request) throws MicroServiceException {
+    @RequestMapping(path = AUTH_LOGOUT, method = RequestMethod.POST)
+    public AuthLogoutResponse logout(@Valid @RequestBody AuthLogoutRequest request) throws MicroServiceException {
         return null;
     }
 
     @Override
-    public AuthLoginResponse signUp(AuthSignUpRequest request) throws MicroServiceException {
+    @RequestMapping(path = AUTH_SIGNUP, method = RequestMethod.POST)
+    public AuthLoginResponse signUp(@Valid @RequestBody AuthSignUpRequest request) throws MicroServiceException {
 
         ObjectContext context = databaseService.getContext();
 
@@ -104,14 +103,18 @@ public class AuthenticationEndpoint extends AbstractMicroservice implements IAut
         user.setLogin(request.getLogin());
         user.setPassword(password(request.getPassword()));
 
+        context.commitChanges();
+
         return login(AuthLoginRequest.builder()
                 .login(request.getLogin())
                 .password(request.getPassword())
                 .build());
     }
 
+    @Override
+    @RequestMapping(path = AUTH_PASSWORD, method = RequestMethod.POST)
     public String password(@Valid @RequestBody String request) throws MicroServiceException {
-//        String password = "tch_" + request;
-        return DigestUtils.md5DigestAsHex(request.getBytes());
+        String password = "tch_" + request;
+        return DigestUtils.md5DigestAsHex(password.getBytes());
     }
 }
