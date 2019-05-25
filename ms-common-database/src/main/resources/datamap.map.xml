@@ -10,7 +10,7 @@
 		<db-attribute name="created_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="deleted_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="email" type="VARCHAR" length="255"/>
-		<db-attribute name="id" type="OTHER" isPrimaryKey="true" isMandatory="true" length="2147483647"/>
+		<db-attribute name="id" type="OTHER" isPrimaryKey="true" isMandatory="true" length="214748"/>
 		<db-attribute name="login" type="VARCHAR" isMandatory="true" length="255"/>
 		<db-attribute name="modified_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="password" type="VARCHAR" isMandatory="true" length="64"/>
@@ -19,9 +19,9 @@
 	<db-entity name="tch_user_session" schema="public">
 		<db-attribute name="created_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="deleted_date" type="TIMESTAMP" length="29"/>
-		<db-attribute name="id" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="2147483647"/>
+		<db-attribute name="id" type="OTHER" isPrimaryKey="true" isMandatory="true" length="214748"/>
 		<db-attribute name="modified_date" type="TIMESTAMP" length="29"/>
-		<db-attribute name="user_id" type="OTHER" isPrimaryKey="true" isMandatory="true" length="2147483647"/>
+		<db-attribute name="user_id" type="OTHER" isMandatory="true" length="214748"/>
 	</db-entity>
 	<obj-entity name="TchUser" className="social.tochka.database.entity.TchUser" dbEntityName="tch_user">
 		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
@@ -37,12 +37,12 @@
 		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
 		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
 	</obj-entity>
-	<db-relationship name="tchUserSession" source="tch_user" target="tch_user_session" toDependentPK="true" toMany="true">
+	<db-relationship name="tchUserSession" source="tch_user" target="tch_user_session" toMany="true">
 		<db-attribute-pair source="id" target="user_id"/>
 	</db-relationship>
 	<db-relationship name="user" source="tch_user_session" target="tch_user" toMany="false">
 		<db-attribute-pair source="user_id" target="id"/>
 	</db-relationship>
 	<obj-relationship name="tchUserSession" source="TchUser" target="TchUserSession" deleteRule="Deny" db-relationship-path="tchUserSession"/>
-	<obj-relationship name="session" source="TchUserSession" target="TchUser" deleteRule="Nullify" db-relationship-path="user"/>
+	<obj-relationship name="user" source="TchUserSession" target="TchUser" deleteRule="Nullify" db-relationship-path="user"/>
 </data-map>
