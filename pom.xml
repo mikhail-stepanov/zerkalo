@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <groupId>social.tochka</groupId>
-    <artifactId>tochka-back</artifactId>
+    <groupId>face.io</groupId>
+    <artifactId>face-io</artifactId>
     <version>1.0.0</version>
-    <name>tochka</name>
+    <name>face</name>
 
     <packaging>pom</packaging>
 
@@ -60,6 +60,8 @@
         <module>ms-common-database</module>
         <module>ms-auth</module>
         <module>ms-mobile</module>
+        <module>ms-photos</module>
+        <module>ms-profiles</module>
     </modules>
 
     <dependencies>

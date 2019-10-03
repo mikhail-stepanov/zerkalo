@@ -23,7 +23,7 @@
 		<db-attribute name="modified_date" type="TIMESTAMP" length="29"/>
 		<db-attribute name="user_id" type="OTHER" isMandatory="true" length="214748"/>
 	</db-entity>
-	<obj-entity name="TchUser" className="social.tochka.database.entity.TchUser" dbEntityName="tch_user">
+    <obj-entity name="TchUser" className="face.io.database.entity.TchUser" dbEntityName="tch_user">
 		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
 		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
 		<obj-attribute name="email" type="java.lang.String" db-attribute-path="email"/>
@@ -32,7 +32,8 @@
 		<obj-attribute name="password" type="java.lang.String" db-attribute-path="password"/>
 		<obj-attribute name="userName" type="java.lang.String" db-attribute-path="user_name"/>
 	</obj-entity>
-	<obj-entity name="TchUserSession" className="social.tochka.database.entity.TchUserSession" dbEntityName="tch_user_session">
+    <obj-entity name="TchUserSession" className="face.io.database.entity.TchUserSession"
+                dbEntityName="tch_user_session">
 		<obj-attribute name="createdDate" type="java.time.LocalDateTime" db-attribute-path="created_date"/>
 		<obj-attribute name="deletedDate" type="java.time.LocalDateTime" db-attribute-path="deleted_date"/>
 		<obj-attribute name="modifiedDate" type="java.time.LocalDateTime" db-attribute-path="modified_date"/>
