@@ -7,6 +7,7 @@ import face.io.msclient.photos.models.PhotosResponse;
 public interface IPhotosService {
 
     String PHOTOS_SAVE = "/photos/save";
+    String INSTAGRAM = "https://www.instagram.com/";
 
     PhotosResponse info(PhotosRequest request) throws MicroServiceException;
 
