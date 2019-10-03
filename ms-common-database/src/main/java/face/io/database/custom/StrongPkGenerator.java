@@ -44,7 +44,6 @@ public class StrongPkGenerator extends PostgresPkGenerator {
         String sql = selectNextValQuery(pkGeneratingSequenceName);
 
         try (Connection con = node.getDataSource().getConnection()) {
-            //если не получилось достать значение - может быть просто нет генератора?
             try (Statement st = con.createStatement()) {
                 String createGeneratorSql = createSequenceString(entity);
                 adapter.getJdbcEventLogger().log(createGeneratorSql);

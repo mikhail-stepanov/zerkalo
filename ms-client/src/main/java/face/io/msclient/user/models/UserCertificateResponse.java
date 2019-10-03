@@ -12,17 +12,17 @@ import lombok.NoArgsConstructor;
 public class UserCertificateResponse {
 
     /**
-     * Идентификатор сертификата
+     * Certificate identifier
      */
     private String id;
 
     /**
-     * Общее имя сертификата
+     * Certificate name
      */
     private String cn;
 
     /**
-     * Отпечаток сертификата
+     * Certificate thumbprint
      */
     private String thumbprint;
 }

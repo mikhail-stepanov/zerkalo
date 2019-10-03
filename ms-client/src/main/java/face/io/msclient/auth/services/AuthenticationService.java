@@ -2,10 +2,9 @@ package face.io.msclient.auth.services;
 
 import face.io.msclient.auth.interfaces.IAuthenticationService;
 import face.io.msclient.auth.models.*;
-import social.tochka.ms.client.auth.models.*;
 import face.io.msclient.common.services.BaseMicroservice;
-import org.springframework.web.client.RestTemplate;
 import face.io.msclient.exceptions.MicroServiceException;
+import org.springframework.web.client.RestTemplate;
 
 
 public class AuthenticationService extends BaseMicroservice implements IAuthenticationService {

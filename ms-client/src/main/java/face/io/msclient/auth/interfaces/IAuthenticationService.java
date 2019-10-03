@@ -1,7 +1,6 @@
 package face.io.msclient.auth.interfaces;
 
 import face.io.msclient.auth.models.*;
-import social.tochka.ms.client.auth.models.*;
 import face.io.msclient.exceptions.MicroServiceException;
 
 public interface IAuthenticationService {

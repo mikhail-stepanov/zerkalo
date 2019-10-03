@@ -23,22 +23,22 @@ public class SwaggerConfiguration implements WebMvcConfigurer {
     public Docket api() {
         Docket docket = new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("social.tochka"))
+                .apis(RequestHandlerSelectors.basePackage("face.io"))
                 .apis(RequestHandlerSelectors.withClassAnnotation(Api.class))
                 .paths(PathSelectors.any())
 
                 .build()
                 .useDefaultResponseMessages(false)
                 .globalResponseMessage(RequestMethod.GET, Arrays.asList(
-                        new ResponseMessageBuilder().code(200).message("Запрос успешно выполнен").build(),
-                        new ResponseMessageBuilder().code(400).message("Ошибка в запросе").build(),
-                        new ResponseMessageBuilder().code(500).message("Внутренняя ошибка сервиса").build()
+                        new ResponseMessageBuilder().code(200).message("Request completed successfully").build(),
+                        new ResponseMessageBuilder().code(400).message("Error in request").build(),
+                        new ResponseMessageBuilder().code(500).message("Internal Service Error").build()
                         )
                 )
                 .globalResponseMessage(RequestMethod.POST, Arrays.asList(
-                        new ResponseMessageBuilder().code(200).message("Запрос успешно выполнен").build(),
-                        new ResponseMessageBuilder().code(400).message("Ошибка в запросе").build(),
-                        new ResponseMessageBuilder().code(500).message("Внутренняя ошибка сервиса").build()
+                        new ResponseMessageBuilder().code(200).message("Request completed successfully").build(),
+                        new ResponseMessageBuilder().code(400).message("Error in request").build(),
+                        new ResponseMessageBuilder().code(500).message("Internal Service Error").build()
                         )
                 );
         return docket;

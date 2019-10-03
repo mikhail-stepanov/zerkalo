@@ -21,7 +21,7 @@ public class SettingsService {
     private void init(){
         ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(true);
         scanner.addIncludeFilter(new AnnotationTypeFilter(SettingsEndpoint.class));
-        for (BeanDefinition bd : scanner.findCandidateComponents("ru.ecom.np")){
+        for (BeanDefinition bd : scanner.findCandidateComponents("face.io")) {
 
             try {
 

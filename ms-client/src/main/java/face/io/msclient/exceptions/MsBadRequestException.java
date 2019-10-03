@@ -3,11 +3,11 @@ package face.io.msclient.exceptions;
 public class MsBadRequestException extends MicroServiceException {
 
     public MsBadRequestException(String parametername, String parameterValue) {
-        super(String.format("Неверный аргумент. Название: %s. Значение: %s", parametername, parameterValue));
+        super(String.format("Incorrect argument. Name: %s. Value: %s", parametername, parameterValue));
     }
 
     public MsBadRequestException(String parametername) {
-        super(String.format("Неверный аргумент. Название: %s. Значение: null", parametername));
+        super(String.format("Incorrect argument. Name: %s. Value: null", parametername));
     }
 
     @Override

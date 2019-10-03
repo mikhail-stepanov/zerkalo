@@ -19,10 +19,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,7 +36,7 @@ import java.util.UUID;
 public abstract class AbstractMicroservice {
 
     private static final String USER_INFO_ATTRIBUTE = "USER_INFO_ATTRIBUTE";
-    private static final String HEADER_ECOM_TOKEN = "tochka-auth-token";
+    private static final String HEADER_ECOM_TOKEN = "face-io-token";
 
     protected static final Logger log = LoggerFactory.getLogger(AbstractMicroservice.class);
 
@@ -88,7 +88,7 @@ public abstract class AbstractMicroservice {
     }
 
     private String getInternalSessionId() {
-        return header("x-tochka-sid")
+        return header("x-face-sid")
                 .orElse(UUID.randomUUID().toString());
     }
 
@@ -124,30 +124,25 @@ public abstract class AbstractMicroservice {
             if (!token.isPresent())
                 return Optional.empty();
 
-            //сначала смотрим в атрибутах запроса
             Optional<UserInfo> userInfo = Optional.ofNullable(RequestContextHolder.getRequestAttributes())
                     .map(attrs -> attrs.getAttribute(USER_INFO_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST))
                     .map(info -> (UserInfo) info);
 
-            //если нашли - возвращаем
             if (userInfo.isPresent())
                 return userInfo;
 
-            //если не нашли, лезем в сервис за информацией
             userInfo = Optional.ofNullable(authenticationService.info(AuthInfoRequest.builder().token(token.get()).build()))
                     .map(response -> UserInfo.builder()
                             .userId(response.getUserId())
                             .userName(response.getUserName())
                             .build());
 
-            //если нашли - устанавливаем в параметры запроса
             userInfo.ifPresent(info -> {
                 Optional.ofNullable(RequestContextHolder.getRequestAttributes()).ifPresent(attrs -> {
                     attrs.setAttribute(USER_INFO_ATTRIBUTE, info, RequestAttributes.SCOPE_REQUEST);
                 });
             });
 
-            //возвращаем результат
             return userInfo;
         } catch (Exception ex) {
             return Optional.empty();
@@ -168,10 +163,9 @@ public abstract class AbstractMicroservice {
                 ex.getMessage(),
                 requestURL,
                 requestBody);
-        //пишем детальную информацию в другой лог
+
         log.error(errorMessage);
 
-        //возвращаем пользователю ничего не значащую информацию об ошибке
         return new ResponseEntity<>(ErrorResponse.builder()
                 .code(String.valueOf(httpStatus.value()))
                 .session(getInternalSessionId())
