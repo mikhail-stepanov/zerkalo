@@ -2,8 +2,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>tochka-back</artifactId>
-        <groupId>social.tochka</groupId>
+        <artifactId>face-io</artifactId>
+        <groupId>face.io</groupId>
         <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -11,19 +11,19 @@
     <artifactId>ms-auth</artifactId>
     <dependencies>
         <dependency>
-            <groupId>social.tochka</groupId>
+            <groupId>face.io</groupId>
             <artifactId>ms-client</artifactId>
             <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>social.tochka</groupId>
+            <groupId>face.io</groupId>
             <artifactId>ms-common</artifactId>
             <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>social.tochka</groupId>
+            <groupId>face.io</groupId>
             <artifactId>ms-common-database</artifactId>
             <version>1.0.0</version>
             <scope>compile</scope>
