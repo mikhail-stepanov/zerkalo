@@ -3,7 +3,7 @@ package face.io.msclient.exceptions;
 public class MsNotAuthorizedException extends MicroServiceException {
 
     public MsNotAuthorizedException() {
-        super("");
+        super("Not authorized.");
     }
 
     @Override

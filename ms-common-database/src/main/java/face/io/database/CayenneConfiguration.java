@@ -19,7 +19,7 @@ public class CayenneConfiguration {
     @Bean
     public ServerRuntime serverRuntime(@Autowired DataSource dataSource){
         ServerRuntime serverRuntime = ServerRuntime.builder()
-                .addConfig("cayenne-tochka-core.xml")
+                .addConfig("cayenne-core.xml")
                 .addModule(binder -> binder.bind(DbAdapterFactory.class).to(CustomAdapterFactory.class))
                 .dataSource(dataSource)
                 .build();

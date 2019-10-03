@@ -3,7 +3,7 @@ package face.io.msclient.exceptions;
 public class MsAlreadyExistsException extends MicroServiceException {
 
     public MsAlreadyExistsException() {
-        super("Объект существует.");
+        super("Object Exists.");
     }
 
     @Override

@@ -35,7 +35,6 @@ public class MetricInterceptor extends HandlerInterceptorAdapter {
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
         buildMetricName(handler).ifPresent(name ->{
-            //пишем время
             startTimes.get(request).stop(meterRegistry.timer(name));
         });
     }

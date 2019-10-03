@@ -95,7 +95,7 @@ public class ConsulFailoverStarter {
                 Thread.sleep(500);
 
                 lock.lock();
-                //ставим лок
+
                 if (!distrDistirbutedLock.lock(true)){
                     continue;
                 }
@@ -105,36 +105,27 @@ public class ConsulFailoverStarter {
                 String leaderNodeName = getLeaderFromProperties(kvValue.getValue().getValue());
 
 
-                //определяем название нашей ноды
                 String myNodeName = consulClient.getAgentSelf().getValue().getConfig().getNodeName();
 
-                //получаем живые сервисы
                 List<HealthService> healthServices = consulClient.getHealthServices("ms-files", true, QueryParams.DEFAULT).getValue();
 
-                //определяем жив ли лидер
                 boolean leaderExists = healthServices.stream().anyMatch(hs -> hs.getNode().getNode().equals(leaderNodeName));
 
-                //если мы должны быть лидером
                 if (leaderNodeName.equalsIgnoreCase(myNodeName)){
 
-                    //если контекст запущен
                     if (running.get())
                         continue;
 
-                    //если контекст не запущен
                     shouldStart.signal();
                     continue;
                 }
 
-                //если мы не должны быть лидером
                 if (!leaderNodeName.equalsIgnoreCase(myNodeName)){
 
-                    //если мы все же запущены - останавливаемся
                     if (leaderExists && running.get()){
                         shouldStop.signal();
                     }
 
-                    //если нет ни одного живого сервиса - запускаемся
                     if (healthServices.isEmpty() && !running.get()){
                         shouldStart.signal();
                     }
@@ -153,15 +144,12 @@ public class ConsulFailoverStarter {
             try {
                 lock.lock();
 
-                //ждем сигнал на старт
                 shouldStart.await();
 
-                //если процесс запущен - запускать нечего
                 if (running.get()){
                     continue;
                 }
 
-                //устанавливаем флаг
                 running.set(true);
 
                 context = SpringApplication.run(applicationClass);
@@ -178,17 +166,13 @@ public class ConsulFailoverStarter {
             try {
                 lock.lock();
 
-                //ждем сигнал на остановку
                 shouldStop.await();
 
-                //если процесс не запущен - стопить нечего
                 if (!running.get())
                     continue;
 
-                //устанавливаем флаг
                 running.set(false);
 
-                //закрываем контекст приложения
                 context.close();
                 context = null;
             } catch (InterruptedException e) {

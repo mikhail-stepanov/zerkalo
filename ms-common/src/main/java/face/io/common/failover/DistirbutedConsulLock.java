@@ -34,22 +34,18 @@ public class DistirbutedConsulLock {
             PutParams putParams = new PutParams();
             putParams.setAcquireSession(sessionId);
 
-            //если получилось создать - возвращаем ок
             if(consulClient.setKVValue(keyPath, "lock:" + LocalDateTime.now(), putParams).getValue()) {
                 return true;
             }
 
-            //если не надо ждать - то и не будем
             if(!block) {
                 return false;
             }
 
-            //если таки надо ждать, но уже дождались - вернем управление
             if(maxTimes != null && count >= maxTimes) {
                 return false;
             }
 
-            //если таки надо ждать - так и быть, подождем
             count ++;
             Thread.sleep(timeInterval);
         }

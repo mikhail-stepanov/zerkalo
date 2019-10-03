@@ -2,12 +2,14 @@ package face.io.common.filters;
 
 import org.apache.commons.io.IOUtils;
 
-import javax.servlet.*;
+import javax.servlet.ReadListener;
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import java.io.*;
 
 public class MultiReadHttpServletRequest extends HttpServletRequestWrapper {
+
     private ByteArrayOutputStream cachedBytes;
 
     public MultiReadHttpServletRequest(HttpServletRequest request) {
@@ -23,7 +25,7 @@ public class MultiReadHttpServletRequest extends HttpServletRequestWrapper {
     }
 
     @Override
-    public BufferedReader getReader() throws IOException{
+    public BufferedReader getReader() throws IOException {
         return new BufferedReader(new InputStreamReader(getInputStream()));
     }
 
@@ -54,7 +56,6 @@ public class MultiReadHttpServletRequest extends HttpServletRequestWrapper {
 
         @Override
         public void setReadListener(ReadListener listener) {
-
         }
 
         @Override

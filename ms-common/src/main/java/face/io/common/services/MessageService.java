@@ -73,7 +73,6 @@ public class MessageService implements IMessageService {
     @Override
     public <TMessageType> boolean publish(String queueName, TMessageType messageObject) {
         try{
-            //отправляем сообщение кролику
             if (!channel.isOpen())
             {
                 reconnect();
@@ -152,22 +151,6 @@ public class MessageService implements IMessageService {
             consumeChannel.basicQos(50, true);
             String consumerId = consumeChannel.basicConsume(queueName, false, new Worker<>(consumeChannel, threadCount, messageClass, callback));
 
-            /*DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-
-                TMessageType messageObject = Optional.ofNullable(delivery)
-                        .map(item -> new String(item.getBody(), StandardCharsets.UTF_8))
-                        .map(message -> gson.fromJson(message, messageClass))
-                        .orElse(null);
-
-                if (messageObject != null && callback.apply(messageObject)){
-                    return;
-                }
-
-                //TODO: перебрасывать в очередь с ошибками
-                System.out.println(delivery.getEnvelope().getExchange());
-            };
-
-            String consumerId = channel.basicConsume(queueName, true, deliverCallback, consumerTag -> {});*/
             return () -> consumeChannel.basicCancel(consumerId);
         } catch (Exception ex){
             ex.printStackTrace();

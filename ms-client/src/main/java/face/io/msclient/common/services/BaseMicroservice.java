@@ -35,7 +35,7 @@ public class BaseMicroservice {
             if (requestAttributes instanceof ServletRequestAttributes) {
                 HttpServletRequest currentRequest = ((ServletRequestAttributes) requestAttributes).getRequest();
                 Collections.list(currentRequest.getHeaderNames()).stream()
-                        .filter(header -> header.startsWith("x-ecom-"))
+                        .filter(header -> header.startsWith("face-io-"))
                         .forEach(header -> {
                             request.getHeaders().set(header, currentRequest.getHeader(header));
                         });
