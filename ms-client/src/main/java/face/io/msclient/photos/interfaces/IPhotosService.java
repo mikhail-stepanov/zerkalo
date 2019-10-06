@@ -6,9 +6,13 @@ import face.io.msclient.photos.models.PhotosResponse;
 
 public interface IPhotosService {
 
-    String PHOTOS_SAVE = "/photos/save";
+    String PHOTOS_SAVE_ID = "/photos/save/id";
+    String PHOTOS_SAVE_NAME = "/photos/save/name";
     String INSTAGRAM = "https://www.instagram.com/";
 
-    PhotosResponse info(PhotosRequest request) throws MicroServiceException;
+    PhotosResponse loadById(PhotosRequest request) throws MicroServiceException;
+
+    PhotosResponse loadByName(PhotosRequest request) throws MicroServiceException;
+
 
 }
