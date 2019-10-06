@@ -14,7 +14,12 @@ public class PhotosService extends BaseMicroservice implements IPhotosService {
     }
 
     @Override
-    public PhotosResponse info(PhotosRequest request) throws MicroServiceException {
-        return retry(() -> restTemplate.postForEntity(buildUrl(PHOTOS_SAVE), request, PhotosResponse.class).getBody());
+    public PhotosResponse loadById(PhotosRequest request) throws MicroServiceException {
+        return retry(() -> restTemplate.postForEntity(buildUrl(PHOTOS_SAVE_ID), request, PhotosResponse.class).getBody());
+    }
+
+    @Override
+    public PhotosResponse loadByName(PhotosRequest request) throws MicroServiceException {
+        return retry(() -> restTemplate.postForEntity(buildUrl(PHOTOS_SAVE_NAME), request, PhotosResponse.class).getBody());
     }
 }

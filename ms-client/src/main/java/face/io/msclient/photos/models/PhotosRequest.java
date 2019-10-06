@@ -13,6 +13,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class PhotosRequest {
 
-    @NotNull
     private String username;
+
+    private String id;
 }

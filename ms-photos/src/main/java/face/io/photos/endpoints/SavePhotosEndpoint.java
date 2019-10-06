@@ -12,9 +12,11 @@ import face.io.msclient.photos.models.PhotosRequest;
 import face.io.msclient.photos.models.PhotosResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.codec.net.URLCodec;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.DataNode;
 import org.jsoup.nodes.Document;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URL;
@@ -32,39 +35,112 @@ import java.nio.channels.ReadableByteChannel;
 @Api("Service for download profile photos")
 public class SavePhotosEndpoint extends AbstractMicroservice implements IPhotosService {
 
-    //    @Value("${tempfiles.directory:/var/tmp}")
-    private String temDir = "C:/TEST/";
+    @Value("${tempfiles.directory:/var/instaPhoto}")
+    private String temDir;
+
+    private String graphQL = "https://www.instagram.com/graphql/query/?query_hash=58b6785bea111c67129decbe6a448951&variables={variables}";
+
+    private RestTemplate restTemplate;
+    private ObjectMapper mapper;
+    private URLCodec codec;
+
+    @PostConstruct
+    private void initialize() {
+        restTemplate = new RestTemplate();
+        mapper = new ObjectMapper();
+        codec = new URLCodec();
+    }
+
+    @ApiOperation("Method to save profile photos by Instagram ID")
+    @RequestMapping(value = PHOTOS_SAVE_ID, method = RequestMethod.POST)
+    public PhotosResponse loadById(@RequestBody PhotosRequest request) throws MicroServiceException {
+        try {
+
+            boolean nextPage = true;
+            String endCursor = "";
+            int count = 0;
+
+            while (nextPage) {
+                String variables = "{\"id\":\"" + request.getId() + "\",\"first\":50,\"after\":\"" + endCursor + "\"}";
+                ResponseEntity<String> response = restTemplate.getForEntity(graphQL, String.class, variables);
+                JsonNode responseNode = mapper.readTree(response.getBody());
+                JsonNode mediaNode = responseNode.get("data").get("user").get("edge_owner_to_timeline_media");
+
+                nextPage = mediaNode.get("page_info").get("has_next_page").booleanValue();
+                if (nextPage)
+                    endCursor = mediaNode.get("page_info").get("end_cursor").textValue();
+
+                JsonNode jsonEdges = mediaNode.get("edges");
+                for (JsonNode edge : jsonEdges) {
+                    if (!edge.get("node").get("is_video").booleanValue()) {
+                        TextNode src = (TextNode) edge.get("node").get("display_url");
+                        File tmpFile = new File(temDir + request.getId() + "/" + count++ + ".jpg");
+                        tmpFile.getParentFile().mkdirs();
+                        tmpFile.createNewFile();
+
+                        URL url = new URL(src.asText());
+                        ReadableByteChannel readableByteChannel = Channels.newChannel(url.openStream());
+                        FileOutputStream fileOutputStream = new FileOutputStream(tmpFile);
+                        fileOutputStream.getChannel()
+                                .transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
+                    }
+                }
+            }
+
+            return PhotosResponse.builder()
+                    .success(1)
+                    .build();
+        } catch (Exception e) {
+            throw new MsInternalErrorException("Photos save exception." + e.getLocalizedMessage());
+        }
+    }
 
     @ApiOperation("Method to save profile photos by Instagram nickname")
-    @RequestMapping(value = PHOTOS_SAVE, method = RequestMethod.POST)
-    public PhotosResponse info(@RequestBody PhotosRequest request) throws MicroServiceException {
+    @RequestMapping(value = PHOTOS_SAVE_NAME, method = RequestMethod.POST)
+    public PhotosResponse loadByName(@RequestBody PhotosRequest request) throws MicroServiceException {
         try {
-            RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<String> response = restTemplate.getForEntity(INSTAGRAM + request.getUsername(), String.class);
 
-            Document html = Jsoup.parse(response.toString());
+            ResponseEntity<String> responseProfile = restTemplate.getForEntity(INSTAGRAM + request.getUsername(), String.class);
+
+            Document html = Jsoup.parse(responseProfile.toString());
             DataNode targetData = html.body().child(118).dataNodes().get(0);
             String json = targetData.toString().substring(21, targetData.toString().length() - 1);
 
-            ObjectMapper mapper = new ObjectMapper();
             JsonNode jsonNode = mapper.readTree(json);
-            JsonNode jsonEdges = jsonNode.get("entry_data").get("ProfilePage").get(0).get("graphql").get("user").get("edge_owner_to_timeline_media").get("edges");
+            String accountId = jsonNode.get("entry_data").get("ProfilePage").get(0).get("graphql").get("user").get("id").textValue();
+
+            boolean nextPage = true;
+            String endCursor = "";
             int count = 0;
 
-            for (JsonNode edge : jsonEdges) {
-                if (!edge.get("node").get("is_video").asBoolean()) {
-                    TextNode src = (TextNode) edge.get("node").get("thumbnail_src");
-                    File tmpFile = new File(temDir + request.getUsername() + "/" + count++ + ".jpg");
-                    tmpFile.getParentFile().mkdirs();
-                    tmpFile.createNewFile();
+            while (nextPage) {
+                String variables = "{\"id\":\"" + accountId + "\",\"first\":50,\"after\":\"" + endCursor + "\"}";
+                ResponseEntity<String> response = restTemplate.getForEntity(graphQL, String.class, variables);
 
-                    URL url = new URL(src.asText());
-                    ReadableByteChannel readableByteChannel = Channels.newChannel(url.openStream());
-                    FileOutputStream fileOutputStream = new FileOutputStream(tmpFile);
-                    fileOutputStream.getChannel()
-                            .transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
+                JsonNode responseNode = mapper.readTree(response.getBody());
+                JsonNode mediaNode = responseNode.get("data").get("user").get("edge_owner_to_timeline_media");
+
+                nextPage = mediaNode.get("page_info").get("has_next_page").booleanValue();
+                if (nextPage)
+                    endCursor = mediaNode.get("page_info").get("end_cursor").textValue();
+
+                JsonNode jsonEdges = mediaNode.get("edges");
+                for (JsonNode edge : jsonEdges) {
+                    if (!edge.get("node").get("is_video").booleanValue()) {
+                        TextNode src = (TextNode) edge.get("node").get("display_url");
+                        File tmpFile = new File(temDir + request.getUsername() + "/" + count++ + ".jpg");
+                        tmpFile.getParentFile().mkdirs();
+                        tmpFile.createNewFile();
+
+                        URL url = new URL(src.asText());
+                        ReadableByteChannel readableByteChannel = Channels.newChannel(url.openStream());
+                        FileOutputStream fileOutputStream = new FileOutputStream(tmpFile);
+                        fileOutputStream.getChannel()
+                                .transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
+                    }
                 }
             }
+
             return PhotosResponse.builder()
                     .success(1)
                     .build();
