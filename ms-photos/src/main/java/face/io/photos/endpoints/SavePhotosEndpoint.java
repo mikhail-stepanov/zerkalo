@@ -83,6 +83,17 @@ public class SavePhotosEndpoint extends AbstractMicroservice implements IPhotosS
                         FileOutputStream fileOutputStream = new FileOutputStream(tmpFile);
                         fileOutputStream.getChannel()
                                 .transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
+                    } else {
+                        TextNode src = (TextNode) edge.get("node").get("video_url");
+                        File tmpFile = new File(temDir + request.getId() + "/" + count++ + ".mp4");
+                        tmpFile.getParentFile().mkdirs();
+                        tmpFile.createNewFile();
+
+                        URL url = new URL(src.asText());
+                        ReadableByteChannel readableByteChannel = Channels.newChannel(url.openStream());
+                        FileOutputStream fileOutputStream = new FileOutputStream(tmpFile);
+                        fileOutputStream.getChannel()
+                                .transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
                     }
                 }
             }
@@ -128,7 +139,18 @@ public class SavePhotosEndpoint extends AbstractMicroservice implements IPhotosS
                 for (JsonNode edge : jsonEdges) {
                     if (!edge.get("node").get("is_video").booleanValue()) {
                         TextNode src = (TextNode) edge.get("node").get("display_url");
-                        File tmpFile = new File(temDir + request.getUsername() + "/" + count++ + ".jpg");
+                        File tmpFile = new File(temDir + request.getId() + "/" + count++ + ".jpg");
+                        tmpFile.getParentFile().mkdirs();
+                        tmpFile.createNewFile();
+
+                        URL url = new URL(src.asText());
+                        ReadableByteChannel readableByteChannel = Channels.newChannel(url.openStream());
+                        FileOutputStream fileOutputStream = new FileOutputStream(tmpFile);
+                        fileOutputStream.getChannel()
+                                .transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
+                    } else {
+                        TextNode src = (TextNode) edge.get("node").get("video_url");
+                        File tmpFile = new File(temDir + request.getId() + "/" + count++ + ".mp4");
                         tmpFile.getParentFile().mkdirs();
                         tmpFile.createNewFile();
 
