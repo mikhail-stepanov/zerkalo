@@ -6,7 +6,8 @@ import java.util.function.Function;
 
 public interface IMessageService {
 
-    String QUEUE_NAME = "edi_import_queue";
+    String SAVE_PROFILE_QUEUE = "save_profile_queue";
+    String ID_TO_COLLECT_QUEUE = "id_to_collect_queue";
 
     <TMessageType> boolean publish(String queueName, TMessageType messageObject);
 

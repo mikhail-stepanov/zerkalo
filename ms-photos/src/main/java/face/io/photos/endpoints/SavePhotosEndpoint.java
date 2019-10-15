@@ -42,13 +42,11 @@ public class SavePhotosEndpoint extends AbstractMicroservice implements IPhotosS
 
     private RestTemplate restTemplate;
     private ObjectMapper mapper;
-    private URLCodec codec;
 
     @PostConstruct
     private void initialize() {
         restTemplate = new RestTemplate();
         mapper = new ObjectMapper();
-        codec = new URLCodec();
     }
 
     @ApiOperation("Method to save profile photos by Instagram ID")
