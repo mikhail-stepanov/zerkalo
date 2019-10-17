@@ -2,6 +2,7 @@ package face.io.profiles.services;
 
 import face.io.common.services.MessageService;
 import face.io.msclient.message.interfaces.IMessageService;
+import face.io.msclient.profiles.models.ProfileCollectRequest;
 import face.io.msclient.profiles.models.ProfileSaveRequest;
 import face.io.profiles.elastic.providers.ProfileQueryBuilder;
 import org.elasticsearch.action.bulk.BulkRequest;
@@ -20,7 +21,7 @@ import java.util.List;
 @Service
 public class ProfileBatchSaver {
 
-    @Value("${profiles.saver.batch-size:#{500}}")
+    @Value("${profiles.saver.batch-size:#{50}}")
     private Integer batchSize;
 
     @Autowired
@@ -33,7 +34,6 @@ public class ProfileBatchSaver {
 
     @Autowired
     private ProfileQueryBuilder queryBuilder;
-
 
     private static final Logger logger = LoggerFactory.getLogger(ProfileBatchSaver.class);
 
@@ -66,13 +66,13 @@ public class ProfileBatchSaver {
         try {
             if (!messages.isEmpty()) {
 
+                messages.forEach(message -> messageService.publish(MessageService.ID_TO_COLLECT_QUEUE, ProfileCollectRequest.builder().id(message.getId())));
+
                 BulkRequest bulkRequest = queryBuilder.insert()
                         .messages(messages)
                         .build();
 
                 elasticClient.bulk(bulkRequest, RequestOptions.DEFAULT);
-
-                messages.forEach(message -> messageService.publish(MessageService.ID_TO_COLLECT_QUEUE, message.getId()));
 
                 return true;
             } else return false;

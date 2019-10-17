@@ -1,6 +1,7 @@
 package face.io.profiles.endpoints;
 
 import face.io.profiles.services.ProfileBatchSaver;
+import face.io.profiles.services.ProfilesCollector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -12,13 +13,26 @@ public class ProfilesAdminEndpoint {
     @Autowired
     private ProfileBatchSaver profileBatchSaver;
 
-    @RequestMapping(value = "/start", method = RequestMethod.POST)
-    public void start() {
+    @Autowired
+    private ProfilesCollector profilesCollector;
+
+    @RequestMapping(value = "/saver/start", method = RequestMethod.POST)
+    public void startSaver() {
         profileBatchSaver.start();
     }
 
-    @RequestMapping(value = "/stop", method = RequestMethod.POST)
-    public void stop() {
+    @RequestMapping(value = "/saver/stop", method = RequestMethod.POST)
+    public void stopSaver() {
         profileBatchSaver.stop();
+    }
+
+    @RequestMapping(value = "/collector/start", method = RequestMethod.POST)
+    public void startCollector() {
+        profilesCollector.start();
+    }
+
+    @RequestMapping(value = "/collector/stop", method = RequestMethod.POST)
+    public void stopCollector() {
+        profilesCollector.stop();
     }
 }
