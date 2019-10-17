@@ -15,8 +15,8 @@ import java.util.List;
 @Component
 public class ProfileQueryBuilder {
 
-    @Value("${profiles.saver.elastic.collection.profiles}")
-    private String collection;
+    @Value("${profiles.saver.elastic.index.profiles}")
+    private String elasticIndex;
 
     public InsertQueryBuilder insert() {
         return new InsertQueryBuilder();
@@ -62,7 +62,7 @@ public class ProfileQueryBuilder {
                     builder.field("edgeOwnerToTimelineMedia", message.getEdgeOwnerToTimelineMedia());
                 }
                 builder.endObject();
-                request.add(new IndexRequest(collection, "profile").source(builder));
+                request.add(new IndexRequest(elasticIndex).id(message.getId()).source(builder));
             }
             return request;
         }
@@ -74,7 +74,7 @@ public class ProfileQueryBuilder {
         }
 
         public DeleteIndexRequest build() {
-            return new DeleteIndexRequest(collection);
+            return new DeleteIndexRequest(elasticIndex);
         }
     }
 }

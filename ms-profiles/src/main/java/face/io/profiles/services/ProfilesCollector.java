@@ -6,7 +6,12 @@ import face.io.common.services.MessageService;
 import face.io.msclient.message.interfaces.IMessageService;
 import face.io.msclient.profiles.models.ProfileCollectRequest;
 import face.io.msclient.profiles.models.ProfileSaveRequest;
-import face.io.profiles.models.ProfileShortModel;
+import org.elasticsearch.action.get.GetRequest;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,24 +23,23 @@ import org.springframework.web.client.RestTemplate;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.Closeable;
-import java.io.IOException;
 
 @Service
 public class ProfilesCollector {
 
-    @Value("${profiles.saver.threadCount:#{10}}")
+    @Value("${profiles.saver.threadCount:#{100}}")
     private Integer threadCount;
+
+    @Value("${profiles.saver.elastic.index.ids}")
+    private String elasticIndex;
 
     private String graphQL = "https://www.instagram.com/graphql/query/?query_hash=58b6785bea111c67129decbe6a448951&variables={variables}";
     private String instagram = "https://www.instagram.com/";
     private RestTemplate restTemplate;
     private ObjectMapper mapper;
 
-    @PostConstruct
-    private void initialize() {
-        restTemplate = new RestTemplate();
-        mapper = new ObjectMapper();
-    }
+    @Autowired
+    private RestHighLevelClient elasticClient;
 
     @Autowired
     private IMessageService messageService;
@@ -44,17 +48,10 @@ public class ProfilesCollector {
 
     private static final Logger logger = LoggerFactory.getLogger(ProfilesCollector.class);
 
-    public void start() {
-        queueSubscriber = messageService.subscribe(MessageService.ID_TO_COLLECT_QUEUE, 1, ProfileCollectRequest.class, this::handleMessage);
-    }
-
-    public void stop() {
-        try {
-            if (queueSubscriber != null)
-                queueSubscriber.close();
-        } catch (Exception ex) {
-            System.err.println(ex.getMessage());
-        }
+    @PostConstruct
+    private void initialize() {
+        restTemplate = new RestTemplate();
+        mapper = new ObjectMapper();
     }
 
     @PreDestroy
@@ -67,16 +64,38 @@ public class ProfilesCollector {
         }
     }
 
+    public void start() {
+        queueSubscriber = messageService.subscribe(MessageService.ID_TO_COLLECT_QUEUE, threadCount, ProfileCollectRequest.class, this::handleMessage);
+    }
+
+    public void stop() {
+        try {
+            if (queueSubscriber != null)
+                queueSubscriber.close();
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+        }
+    }
+
     private boolean handleMessage(ProfileCollectRequest message) {
         try {
-            String variables = "{\"id\":\"" + message.getId() + "\",\"first\":50,\"after\":\"\"}";
-            ResponseEntity<String> response = restTemplate.getForEntity(graphQL, String.class, variables);
-            JsonNode responseNode = mapper.readTree(response.getBody());
-            JsonNode mediaNode = responseNode.get("data").get("user").get("edge_owner_to_timeline_media");
-            JsonNode jsonEdges = mediaNode.get("edges");
+            if (!elasticClient.exists(new GetRequest(elasticIndex, message.getId()), RequestOptions.DEFAULT)) {
+                XContentBuilder builder = XContentFactory.jsonBuilder();
+                builder.startObject();
+                {
+                    builder.field("id", message.getId());
+                }
+                builder.endObject();
+                elasticClient.index(new IndexRequest(elasticIndex).id(message.getId()).source(builder), RequestOptions.DEFAULT);
 
-            publishProfiles(jsonEdges);
+                String variables = "{\"id\":\"" + message.getId() + "\",\"first\":50,\"after\":\"\"}";
+                ResponseEntity<String> response = restTemplate.getForEntity(graphQL, String.class, variables);
+                JsonNode responseNode = mapper.readTree(response.getBody());
+                JsonNode mediaNode = responseNode.get("data").get("user").get("edge_owner_to_timeline_media");
+                JsonNode jsonEdges = mediaNode.get("edges");
 
+                publishProfiles(jsonEdges);
+            }
             return true;
         } catch (Exception ex) {
             logger.error("Exception while processing message from queue: " + ex.getLocalizedMessage());
@@ -87,13 +106,8 @@ public class ProfilesCollector {
 
     private void publishProfiles(JsonNode jsonEdges) {
         for (JsonNode edge : jsonEdges) {
-            JsonNode commentEdges = edge.get("edge_media_to_comment").get("edges");
+            JsonNode commentEdges = edge.get("node").get("edge_media_to_comment").get("edges");
             commentEdges.forEach(commentEdge -> {
-                ProfileShortModel profile = ProfileShortModel.builder()
-                        .id(commentEdge.get("node").get("owner").get("id").asText())
-                        .username(commentEdge.get("node").get("owner").get("username").asText())
-                        .build();
-
                 ResponseEntity<String> userInfo = restTemplate.getForEntity(instagram + commentEdge.get("node").get("owner").get("username").asText() + "/?__a=1", String.class);
                 try {
                     JsonNode userNode = mapper.readTree(userInfo.getBody()).get("graphql").get("user");
@@ -116,8 +130,8 @@ public class ProfilesCollector {
                             .edgeOwnerToTimelineMedia(userNode.get("edge_owner_to_timeline_media").get("count").asInt())
                             .build());
 
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (Exception e) {
+                    logger.error("Exception while publish message to queue: " + e.getLocalizedMessage());
                 }
             });
 
