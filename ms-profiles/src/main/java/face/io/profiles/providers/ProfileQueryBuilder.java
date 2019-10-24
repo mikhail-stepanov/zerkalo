@@ -1,4 +1,4 @@
-package face.io.profiles.elastic.providers;
+package face.io.profiles.providers;
 
 import face.io.msclient.profiles.models.ProfileSaveRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;

@@ -4,7 +4,7 @@ import face.io.common.services.MessageService;
 import face.io.msclient.message.interfaces.IMessageService;
 import face.io.msclient.profiles.models.ProfileCollectRequest;
 import face.io.msclient.profiles.models.ProfileSaveRequest;
-import face.io.profiles.elastic.providers.ProfileQueryBuilder;
+import face.io.profiles.providers.ProfileQueryBuilder;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
