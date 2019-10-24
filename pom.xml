@@ -62,6 +62,7 @@
         <module>ms-mobile</module>
         <module>ms-photos</module>
         <module>ms-profiles</module>
+        <module>ms-temp</module>
     </modules>
 
     <dependencies>

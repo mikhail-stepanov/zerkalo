@@ -3,6 +3,10 @@ package face.io.common.configurations;
 import face.io.common.filters.HttpServletRequestFilter;
 import face.io.msclient.auth.interfaces.IAuthenticationService;
 import face.io.msclient.auth.services.AuthenticationService;
+import face.io.msclient.photos.interfaces.IPhotosService;
+import face.io.msclient.photos.services.PhotosService;
+import face.io.msclient.profiles.interfaces.IProfilesService;
+import face.io.msclient.profiles.services.ProfilesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
@@ -34,6 +38,16 @@ public class MicroservicesConfiguration {
     IAuthenticationService authenticationService(){
         return new AuthenticationService(restTemplate());
     }
+
+    @Bean
+    IPhotosService photosService() {
+        return new PhotosService(restTemplate());
+    }
+
+//    @Bean
+//    IProfilesService profilesService(){
+//        return new ProfilesService(restTemplate());
+//    }
 
 
     @Bean

@@ -12,7 +12,6 @@ import face.io.msclient.photos.models.PhotosRequest;
 import face.io.msclient.photos.models.PhotosResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.codec.net.URLCodec;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.DataNode;
 import org.jsoup.nodes.Document;
@@ -35,7 +34,7 @@ import java.nio.channels.ReadableByteChannel;
 @Api("Service for download profile photos")
 public class SavePhotosEndpoint extends AbstractMicroservice implements IPhotosService {
 
-    @Value("${tempfiles.directory:/var/instaPhoto}")
+    @Value("${tempfiles.directory:/var/instaPhotos/}")
     private String temDir;
 
     private String graphQL = "https://www.instagram.com/graphql/query/?query_hash=58b6785bea111c67129decbe6a448951&variables={variables}";

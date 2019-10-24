@@ -1,4 +1,4 @@
-package face.io.profiles.elastic.configuration;
+package face.io.common.configurations;
 
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
